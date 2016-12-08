@@ -80,9 +80,6 @@ function bubbleSort(arr){
 			// look at the adjacent value to s and decide if they need to be flipped
 			if(arr[s] > arr[s+1]){
 				swap(arr, s, s+1);
-				// var temp = arr[s];
-				// arr[s] = arr[s+1];
-				// arr[s+1] = temp;
 				swapped = true;
 			}
 		}
@@ -220,32 +217,3 @@ console.time("runTime");
 var checked = checkSort(swaparray);
 console.timeEnd("runTime");
 console.log(checked)
-
-
-// console.log(checkSort(unsorted))
-// console.time("bubble");
-// selectionSort(unsorted);
-// console.timeEnd("bubble");
-
-// console.time("bubbletime")
-// bubbleSort(unsorted);
-// console.timeEnd("bubbletime");
-// console.time("selectionTime");
-// selectionSort(unsorted);
-// console.timeEnd("selectionTime");
-
-// var splitting = [2,3,4];
-// console.log("splitting", splitting.slice(0,1));
-
-
-
-
-// console.log("after merge sort", unsort)
-
-// var testarray = [5,4,9,2,5,3];
-// console.log("before", testarray);
-// partition(testarray, 0, testarray.length-1 );
-// console.log("after", testarray);
-// var linkedlist = new SLL();
-// linkedlist.insert(6).insert(7).insert(3);
-// linkedlist.traverse();
