@@ -1,0 +1,208 @@
+
+            <h1>deployment2</h1>
+            <h1>AWS Deployment</h1>
+            <p><strong>Please read these instructions very carefully!</strong> Anywhere you see double curly brackets <code>{{ }}</code>, these are placeholders for your project-specific information. You will need to replace them and everything contained within them with your data - eg, file names, IP addresses, etc.</p>
+            <h2>Part 1: Get prepared</h2>
+            <h3>Core Setup Requirements</h3>
+            <ol>
+                <li>An AWS account</li>
+                <li>A GitHub or bitbucket account</li>
+                <li>An Internet connection</li>
+                <li>Git should be installed locally</li>
+            </ol>
+            <h3>Get going</h3>
+            <ol>
+                <li>Create a local, functional, full MEAN project</li>
+                <li>Keep your project version controlled via git - good practice anyway.</li>
+                <li>Create a .gitignore file in your project
+                     <pre data-language="bash" class="rainbow">touch .gitignore</pre>
+                 </li>
+                <li>Add the following to the .gitignore file
+                    <pre data-language="bash" class="rainbow">.DS_Store
+            .idea
+            .vagrant
+            bootstrap.sh
+            VagrantFile
+            bower_components/
+            node_modules
+            package-lock.json</pre>
+                </li>
+            </ol>
+            <h3>Make a GitHub/bitbucket repository</h3>
+            <ol> 
+                <li>Push your project to that GitHub/bitbucket repository</li>
+            </ol>
+            <hr>
+            <h2>Part 2: Set up AWS</h2>
+            <ol>
+              <li>Enter AWS, and click launch new instance.</li> 
+              <li>Select Ubuntu 16.04 LTS</li> 
+              <li>Select t2.micro</li>
+              <li>Set security settings:
+                  <ul>
+                      <li><code>ssh 0.0.0.0, (Anywhere or myIP)</code></li>
+                      <li><code>http 0.0.0.0 (Anywhere)</code></li>
+                    <li><code>https 0.0.0.0 (Anywhere, or don't set it)</code></li>
+                  </ul>
+              </li>
+              <li>Download a <code>.pem</code> key from AWS or use an existing key</li>
+              <li>Move the <code>.pem</code> file to an appropriate folder on your system</li>
+              <li>From the folder containing your <code>.pem</code> file, change its user permission with this command:
+                  <pre data-language="bash" class="rainbow">chmod 400 {{file_name}}.pem</pre>
+                  <p><strong>For PC users,</strong> this command may require kitty, putty, or bash terminal.</p>
+              </li>
+            </ol>
+            <p>We are now ready to enter the cloud server!</p>
+            <hr>
+            <h2>Part 3: Enter the cloud server</h2>
+            <ol>
+                <li>Navigate to the directory where your .pem file is!</li>
+                <li>Copy the command to SSH into your EC2 instance by clicking the <button>Connect</button> button on AWS.
+                <img src="https://s3.amazonaws.com/General_V88/boomyeah2015/codingdojo/curriculum/content/chapter/Screen_Shot_2018-06-15_at_2.12.53_PM.png"><br><br>
+                 <p>A pop-up will show you how to connect to your instance. All you need is the line of code underneath where it says <strong>Example</strong>, which will follow this basic format: <code>ssh -i {{mypem}}.pem ubuntu@{{yourAWS.ip}}</code></p>
+                 <p><strong>For PC users,</strong> this command may require kitty, putty, or bash terminal.</p>
+                </li>
+                <li>From the directory where your .pem file is, run the command you copied from AWS to SSH into your EC2 instance.</li>
+                <li>When prompted, type <code>yes</code>!</li>
+            </ol>
+            <p>You are now in the EC2 server!</p>
+            <hr>
+            <h2>Part 4: Install dependencies</h2>
+            <ol>
+              <li>In the ubuntu terminal: These establish some basic dependencies for deployment and the Linux server.
+                <pre data-language="bash" class="rainbow">sudo apt-get update
+            sudo apt-get install -y build-essential openssl libssl-dev pkg-config
+            </pre>
+            </li>
+              <li>Type the following lines one at a time because they require confirmation. The first two commands install basic node and npm. The third line forcibly cleans the cache, which will give you an interesting comment. :)
+                <pre data-language="bash" class="rainbow">sudo apt-get install -y nodejs nodejs-legacy 
+            sudo apt-get install npm -y
+            sudo npm cache clean -f</pre>
+                  <p><strong>Note:</strong> In case the first command does not work, try <code>sudo apt install nodejs-legacy</code> instead.</p>
+              </li>
+            <li>Install the node package manager <strong>n</strong> and updated node.
+                <pre data-language="bash" class="rainbow">sudo npm install -g n
+            sudo n stable
+            </pre>
+            </li>
+            <li>Install the Angular CLI <pre data-language="bash" class="rainbow">sudo npm install -g @angular/cli</pre>
+            </li> 
+            <li>Install NGINX and git:
+                <pre data-language="bash" class="rainbow">sudo apt-get install nginx git -y</pre>
+            </li>
+            </ol>
+            <hr>
+            <h2>Part 5: Clone your project</h2>
+            <ol>
+                    <li>Navigate to /var/www
+                        <pre data-language="bash" class="rainbow">cd /var/www</pre>
+                        <p>If <code>/var/www</code> does not exist, then run <code>sudo mkdir /var/www</code>, after which you may navigate to it.</p></li>
+             
+            <li>Clone your project
+                <pre data-language="bash" class="rainbow">sudo git clone {{your project file path on github/bitbucket}}</pre>
+            </li></ol>
+            <p>At this point, you should be able to navigate into your project and make sure everything is looking just as you remember it.</p>
+            <hr>
+            <h2>Part 6: Set up NGINX</h2>
+            <ol>
+             
+            <li>Go to nginx’s sites-available directory<pre data-language="bash" class="rainbow">cd /etc/nginx/sites-available</pre>
+            </li>
+             
+            <li>Create a file using vim and name it after your cloned repo
+                <pre data-language="bash" class="rainbow">sudo vim {{your cloned repo's name}}</pre>
+                <p>vim is a terminal-based text editor. For more info see: <a href="http://vim-adventures.com/" target="_blank">vim-adventures.com/</a> or other vim learning tools. The key commands for us are 
+                    </p><ul>
+                        <li><strong>i</strong>, which allows us to type, or <strong>insert</strong> text</li>
+                        <li><strong>esc</strong>, which turns off insert </li>
+                        <li><strong>:wq</strong>, which we use to <strong>write</strong> (also known as save) and <strong>quit</strong></li>
+                    </ul>
+            </li>
+             
+                <li>Add the following code to the file you just made by using vim. Enter insert mode by clicking <strong>i</strong>. Change the two placeholders inside of double curly brackets <code>{{ }}</code> to match your specifications.
+            <pre data-language="bash" class="rainbow">server {
+                listen 80;
+                location / {
+                    proxy_pass http://{{PRIVATE-IP}}:{{NODE-PROJECT-PORT}};
+                    proxy_http_version 1.1;
+                    proxy_set_header Upgrade $http_upgrade;
+                    proxy_set_header Connection 'upgrade';
+                    proxy_set_header Host $host;
+                    proxy_cache_bypass $http_upgrade;
+                }
+            }</pre>
+                <p>This code says: have the reverse proxy server (nginx) listen at port 80. When going to root /, listen for http requests as though you were actually http://&lt;your private ip&gt; and the port where your server is listening e.g @8000 or @6789 etc.</p>
+                <p>Learn more from nginx: <a href="http://nginx.org/en/docs/http/ngx_http_proxy_module.html" target="_blank">http://nginx.org/en/docs/http/ngx_http_proxy_module.html</a></p></li>
+             
+            <li>Remove the default from nginx's sites-available directory<pre data-language="bash" class="rainbow">sudo rm default</pre>
+            </li>
+            <li>Create a symbolic link from sites-enabled to sites-available:
+                <pre data-language="bash" class="rainbow">sudo ln -s /etc/nginx/sites-available/{{repo name}} /etc/nginx/sites-enabled/{{repo name}}
+            </pre>
+                </li>
+            <li>Remove the default from nginx's sites-enabled diretory<pre data-language="bash" class="rainbow">sudo rm /etc/nginx/sites-enabled/default
+            </pre>
+                
+                </li></ol>
+            <hr>
+            <h2>Part 7: Project Dependencies and pm2</h2>
+            <ol>
+             
+            <li>Install pm2 globally 
+                <pre data-language="bash" class="rainbow">sudo npm install pm2 -g</pre>
+              
+                <p>pm2 is a production process manager that allows us to run node processes in the background.
+                (<a href="https://www.npmjs.com/package/pm2.5" target="_blank">https://www.npmjs.com/package/pm2.5</a>) (<a href="https://www.npmjs.com/package/pm2" target="_blank">https://www.npmjs.com/package/pm2</a>). 
+                </p></li>
+                <li>Navigate back to your project and change its permissions
+                <pre data-language="bash" class="rainbow">cd /var/www
+            sudo chown -R ubuntu {{repo name}}
+            </pre>
+                </li>
+                <li>Navigate into the project, install the needed node modules, and build the dist folder<pre data-language="bash" class="rainbow">cd {{repo name}}
+            npm install
+            cd {{angular project name, we usually call it public}}
+            npm install
+            ng build</pre>
+                </li></ol>
+            <hr>
+            <h2>Part 8: MongoDB</h2>
+            <ol><li>Import GPG key<pre data-language="bash" class="rainbow">sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv  0C49F3730359A14518585931BC711F9BA15703C6</pre>
+                <p>Ubuntu checks that software packages are authentic by checking that they are signed with a GPG key, which is used for encryption. The code above imports the key for the official MongoDB repository.</p></li>
+                <li>Define where to download the packages
+             <pre data-language="bash" class="rainbow">echo "deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list</pre>
+            <p>The above command creates a list file for MongoDB.</p></li>
+            <li>Re-update to integrate Mongo
+            <pre data-language="bash" class="rainbow">sudo apt-get update</pre>
+            </li> 
+            <li>Install MongoDB
+                <pre data-language="bash" class="rainbow">sudo apt-get install -y mongodb</pre>
+                <p>Use <code>sudo apt-get install -y mongodb-org</code> if the above command does not work.</p>
+            </li>
+                <li>Create /data/db
+                <pre data-language="bash" class="rainbow">sudo mkdir /data
+            sudo mkdir /data/db</pre>
+            </li>
+                <li><pre data-language="bash" class="rainbow">sudo service mongod start</pre>
+                    <p>This command will run mongoDB as a daemon, or as a background process.</p>
+                    <p>If you're having trouble getting mongod to start with <code>service</code>, try running it manually with <code>sudo mongod</code> and check for error messages.</p></li>
+                <li>Check the status of your service. Use <code>ctrl C</code> when you are done.
+                    <pre data-language="bash" class="rainbow">sudo service mongod status</pre>
+            </li>
+                <li>Now we want to automatically start Mongo when the system starts.
+                     <pre data-language="bash" class="rainbow">sudo systemctl enable mongod &amp;&amp; sudo systemctl start mongod</pre>
+            </li></ol>
+            <hr>
+            <h2>Part 9: Start your server!</h2>
+            <ol>
+                            <li>Navigate to your project<pre data-language="bash" class="rainbow">cd /var/www/{{repo name}}</pre>
+            </li>
+                            <li>Start your pm2 project<pre data-language="bash" class="rainbow">pm2 start server.js</pre>
+            </li>
+                              
+                            <li>Restart nginx<pre data-language="bash" class="rainbow">sudo service nginx stop &amp;&amp; sudo service nginx start</pre>
+            </li></ol>
+            <p>At this point, you should be able to navigate to your AWS public IP and see your live project!</p>
+            <p>Use <code>pm2 logs</code> to see the logs of your different pm2 instances.</p>
+            <p><code>pm2 show {{ pm2 instance id }}</code> will give you details of that instance.</p>
+                    

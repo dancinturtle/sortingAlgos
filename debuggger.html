@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    
+<script>
+    function bubbleagain(arr){
+        for(var end = arr.length-1; end > 0; end--){
+            var swapped = false;
+            for(var i=0; i<end; i++){
+                if(arr[i] > arr[i+1]){
+                    swapped = true;
+                    let temp = arr[i];
+                    arr[i] = arr[i+1];
+                    arr[i+1] = temp;
+                }
+            }
+            if(swapped == false){
+                
+                return arr;
+            }
+        }
+       
+        return arr;
+    }
+    
+    
+    
+    var bubarr = [1,2,3,4,5,6,7,8,7];			 
+    bubbleagain(bubarr);
+    console.log("bubbbb", bubarr);
+</script>
+</body>
+</html>
